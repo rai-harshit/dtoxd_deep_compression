@@ -47,14 +47,19 @@ def forward_fn(inputs, data_format):
     inputs = tf.transpose(inputs, [0, 3, 1, 2])
 
   # conv1
-  inputs = tf.layers.conv2d(inputs, 32, [5, 5], padding='same',
+  inputs = tf.layers.conv2d(inputs, 32, [3, 3], padding='same',
                             data_format=data_format, activation=tf.nn.relu, name='conv1')
   inputs = tf.layers.max_pooling2d(inputs, [2, 2], 2, data_format=data_format, name='pool1')
 
   # conv2
-  inputs = tf.layers.conv2d(inputs, 64, [5, 5], padding='same',
+  inputs = tf.layers.conv2d(inputs, 64, [3, 3], padding='same',
                             data_format=data_format, activation=tf.nn.relu, name='conv2')
   inputs = tf.layers.max_pooling2d(inputs, [2, 2], 2, data_format=data_format, name='pool2')
+
+  # conv3
+  inputs = tf.layers.conv2d(inputs, 128, [3,3], padding='same',
+  							data_format=data_format, activation=tf.nn.relu, name='conv3')
+  inputs = tf.layers.max_pooling2d(inputs, [2,2], 2, data_format=data_format, name='pool3')
 
   # fc3
   inputs = tf.layers.flatten(inputs, name='flatten')
@@ -113,7 +118,7 @@ class ModelHelper(AbstractModelHelper):
   def setup_lrn_rate(self, global_step):
     """Setup the learning rate (and number of training iterations)."""
 
-    nb_epochs = 160
+    nb_epochs = 300
     idxs_epoch = [40, 80, 120]
     decay_rates = [1.0, 0.1, 0.01, 0.001]
     batch_size = FLAGS.batch_size * (1 if not FLAGS.enbl_multi_gpu else mgw.size())
